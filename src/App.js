@@ -1,23 +1,33 @@
-import logo from './logo.svg';
 import './App.css';
+import axios from 'axios';
+import {useEffect, useState} from 'react';
+import Pets from './Pets';
+import Filter from './Filter';
 
 function App() {
+const [items, setItems] = useState([]);
+const [isLoading, setIsLoading] = useState(true);
+const [query, setQuery] = useState('available');
+
+
+  useEffect(() => {
+      const fetchItems = async () => {
+        const result = await axios(`https://petstore.swagger.io/v2/pet/findByStatus?status=${query}`);
+
+        console.log(result.data);
+        setItems([]);
+        setItems(result.data);
+        setIsLoading(false);
+      }  
+      fetchItems()
+  }, [query])
+
+
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Filter getQuery={(q) => setQuery(q)} />
+      <Pets isLoading={isLoading} items={items} />
     </div>
   );
 }
